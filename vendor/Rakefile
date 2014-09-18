@@ -1,0 +1,9 @@
+task :default => 'gmock'
+
+directory 'gmock' do |t|
+  sh "svn checkout http://googlemock.googlecode.com/svn/tags/release-1.7.0 #{t.name}"
+  Dir.chdir(t.name) do
+    sh 'cmake .'
+    sh 'make'
+  end
+end

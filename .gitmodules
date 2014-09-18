@@ -1,0 +1,6 @@
+[submodule "vendor/bandit"]
+	path = vendor/bandit
+	url = https://github.com/joakimkarlsson/bandit
+[submodule "vendor/bandit_with_gmock"]
+	path = vendor/bandit_with_gmock
+	url = https://github.com/mrk21/bandit_with_gmock

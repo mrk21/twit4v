@@ -1,4 +1,4 @@
-twit4v
+Twit4v
 ======
 
 Twitter client for Vimmer.

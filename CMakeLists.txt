@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
+project(Twit4v)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  if(CMAKE_CXX_COMPILER_VERSION LESS "3.4")
+    message(FATAL_ERROR "A supported Clang version is equal to or greater than 3.4!")
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  if(CMAKE_CXX_COMPILER_VERSION LESS "5.1")
+    message(FATAL_ERROR "A supported AppleClang version is equal to or greater than 5.1!")
+  endif()
+else()
+  message(FATAL_ERROR "Supported compilers are Clang and AppleClang!")
+endif()
+
+find_package(Qt5Widgets REQUIRED)
+message(STATUS "Qt ${Qt5Widgets_VERSION_STRING}")
+
+set(CMAKE_CXX_FLAGS "-std=gnu++1y -stdlib=libc++ -Wall -Wextra")
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(Twit4v_QT_MODULES Widgets)
+set(Twit4v_LIBRARY_NAME twit4v)
+
+include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
+add_subdirectory(src/twit4v)
+
+if(IS_TEST)
+  add_subdirectory(test)
+else()
+  add_subdirectory(src)
+endif()
