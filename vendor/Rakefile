@@ -1,9 +1,22 @@
-task :default => 'gmock'
+task :default => [
+  'cpp-netlib/libs/network/src/libcppnetlib-client-connections.a',
+  'gmock/libgmock.a'
+]
 
-directory 'gmock' do |t|
-  sh "svn checkout http://googlemock.googlecode.com/svn/tags/release-1.7.0 #{t.name}"
-  Dir.chdir(t.name) do
+file 'cpp-netlib/libs/network/src/libcppnetlib-client-connections.a' => 'cpp-netlib' do |t|
+  Dir.chdir(t.prerequisites.first) do
     sh 'cmake .'
     sh 'make'
   end
+end
+
+file 'gmock/libgmock.a' => 'gmock' do |t|
+  Dir.chdir(t.prerequisites.first) do
+    sh 'cmake .'
+    sh 'make'
+  end
+end
+
+directory 'gmock' do |t|
+  sh "svn checkout http://googlemock.googlecode.com/svn/tags/release-1.7.0 #{t.name}"
 end

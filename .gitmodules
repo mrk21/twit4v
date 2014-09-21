@@ -4,3 +4,6 @@
 [submodule "vendor/bandit_with_gmock"]
 	path = vendor/bandit_with_gmock
 	url = https://github.com/mrk21/bandit_with_gmock
+[submodule "vendor/cpp-netlib"]
+	path = vendor/cpp-netlib
+	url = https://github.com/cpp-netlib/cpp-netlib
