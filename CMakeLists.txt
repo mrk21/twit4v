@@ -27,7 +27,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/vendor/cpp-netlib
 )
 link_directories(
-  ${PROJECT_SOURCE_DIR}/vendor/cpp-netlib/libs/network/src
+  ${PROJECT_SOURCE_DIR}/vendor/gen/cpp-netlib/libs/network/src
 )
 add_definitions(
   -DBOOST_NETWORK_ENABLE_HTTPS

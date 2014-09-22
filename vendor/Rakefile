@@ -1,20 +1,34 @@
-task :default => [
-  'cpp-netlib/libs/network/src/libcppnetlib-client-connections.a',
-  'gmock/libgmock.a'
-]
+require 'fileutils'
 
-file 'cpp-netlib/libs/network/src/libcppnetlib-client-connections.a' => 'cpp-netlib' do |t|
+directory 'gen'
+
+task :default => :build
+
+desc 'Build'
+task :build => ['gen','gmock'] do |t|
   Dir.chdir(t.prerequisites.first) do
-    sh 'cmake .'
+    sh 'cmake ..'
     sh 'make'
   end
 end
 
-file 'gmock/libgmock.a' => 'gmock' do |t|
-  Dir.chdir(t.prerequisites.first) do
-    sh 'cmake .'
-    sh 'make'
+desc 'Clean'
+task :clean => 'gen' do
+  Dir.chdir('gen') do
+    sh 'make clean'
   end
+end
+
+desc 'Rebuild'
+task :rebuild => 'gen' do
+  Dir.chdir('gen') do
+    sh 'make clean all'
+  end
+end
+
+desc 'Distclean'
+task :distclean do
+  FileUtils.rm_rf 'gen'
 end
 
 directory 'gmock' do |t|
