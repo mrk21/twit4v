@@ -8,8 +8,8 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/vendor/gmock/gtest/include
 )
 link_directories(
-  ${PROJECT_SOURCE_DIR}/vendor/gmock
-  ${PROJECT_SOURCE_DIR}/vendor/gmock/gtest
+  ${PROJECT_SOURCE_DIR}/vendor/gen/gmock
+  ${PROJECT_SOURCE_DIR}/vendor/gen/gmock/gtest
 )
 
 file(GLOB_RECURSE Twit4v_SPECS "spec/*_spec.cpp")
