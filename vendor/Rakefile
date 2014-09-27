@@ -1,34 +1,32 @@
 require 'fileutils'
 
-directory 'gen'
-
 task :default => :build
 
 desc 'Build'
-task :build => ['gen','gmock'] do |t|
-  Dir.chdir(t.prerequisites.first) do
-    sh 'cmake ..'
-    sh 'make'
-  end
-end
+task :build => ['gen/cpp-netlib']
 
-desc 'Clean'
-task :clean => 'gen' do
-  Dir.chdir('gen') do
-    sh 'make clean'
-  end
-end
-
-desc 'Rebuild'
-task :rebuild => 'gen' do
-  Dir.chdir('gen') do
-    sh 'make clean all'
-  end
-end
+desc 'Build development tools'
+task :devtool => [:build, 'gen/gmock']
 
 desc 'Distclean'
 task :distclean do
   FileUtils.rm_rf 'gen'
+end
+
+directory 'gen/cpp-netlib' => 'cpp-netlib' do |t|
+  FileUtils.mkdir_p t.name
+  Dir.chdir t.name do
+    sh "cmake ../../#{t.prerequisites.first}"
+    sh 'make'
+  end
+end
+
+directory 'gen/gmock' => 'gmock' do |t|
+  FileUtils.mkdir_p t.name
+  Dir.chdir t.name do
+    sh "cmake ../../#{t.prerequisites.first}"
+    sh 'make'
+  end
 end
 
 directory 'gmock' do |t|

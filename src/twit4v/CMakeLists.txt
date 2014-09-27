@@ -12,10 +12,8 @@ add_library(${Twit4v_LIBRARY_NAME}
   ${Twit4v_UI_HEADERS}
 )
 target_link_libraries(${Twit4v_LIBRARY_NAME}
-  ssl
-  crypto
-  boost_system
-  boost_thread-mt
+  ${Boost_LIBRARIES}
+  ${OPENSSL_LIBRARIES}
   cppnetlib-uri
   cppnetlib-client-connections
 )

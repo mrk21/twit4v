@@ -13,18 +13,20 @@ else()
   message(FATAL_ERROR "Supported compilers are Clang and AppleClang!")
 endif()
 
-find_package(Boost 1.55 REQUIRED)
+find_package(Boost 1.55 REQUIRED system thread)
+find_package(OpenSSL 1.0 REQUIRED)
 find_package(Qt5Widgets 5.3 REQUIRED)
 message(STATUS "Qt Widgets version: ${Qt5Widgets_VERSION_STRING}")
-find_package(OpenSSL REQUIRED)
 
 set(CMAKE_CXX_FLAGS "-std=gnu++1y -stdlib=libc++ -Wall -Wextra -Wno-unused-parameter")
 set(Twit4v_LIBRARY_NAME twit4v)
 
 include_directories(
   ${PROJECT_SOURCE_DIR}
-  ${Qt5Widgets_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/vendor/cpp-netlib
+  ${Boost_INCLUDE_DIRS}
+  ${OPENSSL_INCLUDE_DIR}
+  ${Qt5Widgets_INCLUDE_DIRS}
 )
 link_directories(
   ${PROJECT_SOURCE_DIR}/vendor/gen/cpp-netlib/libs/network/src
