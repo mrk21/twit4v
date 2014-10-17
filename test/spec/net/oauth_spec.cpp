@@ -97,28 +97,28 @@ go_bandit([]{
             using namespace signature_base_string_test;
             
             describe("when the session['oauth_signature_method'] was nothing", [&]{
-                it("should be empty", [&]{
+                it("should be an invalid value", [&]{
                     auto session = SESSION;
                     auto request = client::request(URI);
                     session["oauth_signature_method"] = boost::none;
-                    AssertThat(detail::signature(session, request, METHOD), Equals(""));
+                    AssertThat(static_cast<bool>(detail::signature(session, request, METHOD)), Equals(false));
                 });
             });
             
             describe("when the session['oauth_signature_method'] was 'HMAC-SHA1'", [&]{
-                it("should be not empty", [&]{
+                it("should be a valid value", [&]{
                     auto session = SESSION;
                     auto request = client::request(URI);
-                    AssertThat(detail::signature(session, request, METHOD), not Equals(""));
+                    AssertThat(static_cast<bool>(detail::signature(session, request, METHOD)), Equals(true));
                 });
             });
             
             describe("when the session['oauth_signature_method'] was other", [&]{
-                it("should be empty", [&]{
+                it("should be an invalid value", [&]{
                     auto session = SESSION;
                     auto request = client::request(URI);
                     session["oauth_signature_method"] = "RSA-SHA1";
-                    AssertThat(detail::signature(session, request, METHOD), Equals(""));
+                    AssertThat(static_cast<bool>(detail::signature(session, request, METHOD)), Equals(false));
                 });
             });
         });

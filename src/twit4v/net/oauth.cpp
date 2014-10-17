@@ -59,17 +59,17 @@ namespace twit4v { namespace net { namespace oauth {
         using percent_encoding = percent_encoding::basic_encoding<percent_encoding::rfc5849_policy>;
         
         // see: RFC5849, 3.4.2
-        std::string hmac_sha1(std::string const & value, std::string const & key) {
-            std::string result(SHA_DIGEST_LENGTH + 1, '\0');
+        std::string hmac_sha1(std::string const & key, std::string const & text) {
+            std::string digest(SHA_DIGEST_LENGTH + 1, '\0');
             unsigned int length;
             HMAC(
                 EVP_sha1(),
                 (const unsigned char *)key.data(), key.length(),
-                (const unsigned char *)value.data(), value.length(),
-                (unsigned char *)result.data(), &length
+                (const unsigned char *)text.data(), text.length(),
+                (unsigned char *)digest.data(), &length
             );
-            result.erase(length); 
-            return result;
+            digest.erase(length); 
+            return utils::base64::encode<char>(digest);
         }
         
         // see: RFC5849, 3.5.1
@@ -104,7 +104,7 @@ namespace twit4v { namespace net { namespace oauth {
         
         // see: RFC5849, 3.4.2
         // note: Supported signature methods are only "HMAC-SHA1".
-        std::string signature(
+        oauth::session::value_type signature(
             oauth::session const & session,
             client::request const & request,
             std::string method
@@ -112,14 +112,12 @@ namespace twit4v { namespace net { namespace oauth {
             if (auto signature_method = session["oauth_signature_method"]) {
                 if (*signature_method == "HMAC-SHA1") {
                     std::string key;
-                    if (auto v = session["oauth_consumer_secret"]) key += *v;
-                    key += "&";
-                    if (auto v = session["oauth_token_secret"]) key += *v;
-                    auto base = signature_base_string(session, request, method);
-                    return utils::base64::encode<char>(hmac_sha1(base, key));
+                    if (auto v = session["oauth_consumer_secret"]) { key += *v; } key += "&";
+                    if (auto v = session["oauth_token_secret"   ]) { key += *v; }
+                    return hmac_sha1(key, signature_base_string(session, request, method));
                 }
             }
-            return "";
+            return boost::none;
         }
         
         // see: RFC5849, 3.4.1
@@ -133,17 +131,20 @@ namespace twit4v { namespace net { namespace oauth {
             if (!content_types.empty()) content_type = content_types.front().second;
             parameter oauth_params = session.send_params({"realm","oauth_signature"});
             
-            // base string URI
+            // base string URI (see: RFC5849, 3.4.1.2)
             uri::uri base_string_uri;
             base_string_uri
                 << uri::scheme(request.uri().scheme())
                 << uri::host(request.uri().host())
                 << uri::path(request.uri().path());
             
-            // request parameter
+            // request parameter (see: RFC5849, 3.4.1.3)
             std::vector<std::string> params;
             auto push_param = [&params](auto & pair){
-                params.push_back(percent_encoding::encode(pair.first) +"="+ percent_encoding::encode(pair.second));
+                params.push_back((boost::format("%s=%s")
+                    % percent_encoding::encode(pair.first)
+                    % percent_encoding::encode(pair.second)
+                ).str());
             };
             boost::for_each(parse_www_form_urlencoded(request.uri().query()), push_param);
             boost::for_each(oauth_params, push_param);

@@ -37,13 +37,13 @@ namespace twit4v { namespace net { namespace oauth {
     };
     
     namespace detail {
-        std::string hmac_sha1(std::string const & value, std::string const & key);
+        std::string hmac_sha1(std::string const & key, std::string const & text);
         
         std::string authorization_header(oauth::session const & session);
         std::string timestamp();
         std::string nonce();
         
-        std::string signature(
+        oauth::session::value_type signature(
             oauth::session const & session,
             client::request const & request,
             std::string method
