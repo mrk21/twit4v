@@ -46,7 +46,7 @@ namespace twit4v { namespace net { namespace oauth {
         return result;
     }
     
-    client::request & session::authorize(client::request & request, std::string method) {
+    client::request & session::authorize(client::request & request, std::string const & method) {
         auto & that = *this;
         that["oauth_nonce"] = detail::nonce();
         that["oauth_timestamp"] = detail::timestamp();
@@ -107,7 +107,7 @@ namespace twit4v { namespace net { namespace oauth {
         oauth::session::value_type signature(
             oauth::session const & session,
             client::request const & request,
-            std::string method
+            std::string const & method
         ) {
             if (auto signature_method = session["oauth_signature_method"]) {
                 if (*signature_method == "HMAC-SHA1") {
@@ -124,7 +124,7 @@ namespace twit4v { namespace net { namespace oauth {
         std::string signature_base_string(
             oauth::session const & session,
             client::request const & request,
-            std::string method
+            std::string const & method
         ) {
             auto content_types = headers(request)["Content-Type"];
             std::string content_type = "";

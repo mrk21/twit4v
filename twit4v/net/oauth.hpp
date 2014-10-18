@@ -33,7 +33,7 @@ namespace twit4v { namespace net { namespace oauth {
         value_type       & operator[](std::string const & key);
         value_type const & operator[](std::string const & key) const;
         parameter send_params(std::vector<std::string> const & exclusions = {}) const;
-        client::request & authorize(client::request & request, std::string method);
+        client::request & authorize(client::request & request, std::string const & method);
     };
     
     namespace detail {
@@ -46,13 +46,13 @@ namespace twit4v { namespace net { namespace oauth {
         oauth::session::value_type signature(
             oauth::session const & session,
             client::request const & request,
-            std::string method
+            std::string const & method
         );
         
         std::string signature_base_string(
             oauth::session const & session,
             client::request const & request,
-            std::string method
+            std::string const & method
         );
     }
 }}}
