@@ -26,6 +26,14 @@ namespace twit4v { namespace net { namespace oauth {
         }
     }
     
+    void session::set_authorizer(authorizer_type authorizer) {
+        this->authorizer = authorizer;
+    }
+    
+    void session::authorize() {
+        if (this->authorizer) this->authorizer(*this);
+    }
+    
     session::value_type & session::operator[](std::string const & key) {
         return this->oauth_params.at(key);
     }
@@ -46,7 +54,7 @@ namespace twit4v { namespace net { namespace oauth {
         return result;
     }
     
-    client::request & session::authorize(client::request & request, std::string const & method) {
+    client::request & session::attach_to(client::request & request, std::string const & method) {
         auto & that = *this;
         that["oauth_nonce"] = detail::nonce();
         that["oauth_timestamp"] = detail::timestamp();

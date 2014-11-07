@@ -4,6 +4,7 @@
 #include <twit4v/net.hpp>
 #include <vector>
 #include <initializer_list>
+#include <functional>
 #include <boost/optional.hpp>
 
 namespace twit4v { namespace net { namespace oauth {
@@ -11,6 +12,7 @@ namespace twit4v { namespace net { namespace oauth {
     public:
         using value_type = boost::optional<std::string>;
         using param_type = std::map<std::string, value_type>;
+        using authorizer_type = std::function<void(session &)>;
         
     protected:
         param_type oauth_params{
@@ -27,13 +29,16 @@ namespace twit4v { namespace net { namespace oauth {
             {"oauth_callback"        , boost::none},
             {"oauth_verifier"        , boost::none},
         };
+        authorizer_type authorizer;
         
     public:
         session(std::initializer_list<parameter::value_type> params);
+        void set_authorizer(authorizer_type authorizer);
+        void authorize();
         value_type       & operator[](std::string const & key);
         value_type const & operator[](std::string const & key) const;
         parameter send_params(std::vector<std::string> const & exclusions = {}) const;
-        client::request & authorize(client::request & request, std::string const & method);
+        client::request & attach_to(client::request & request, std::string const & method);
     };
     
     namespace detail {
