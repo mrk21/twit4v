@@ -19,7 +19,6 @@ namespace twit4v { namespace twitter { namespace auth {
     
     void pin_based_oauth::operator ()(net::oauth::session & session) {
         using namespace boost::network;
-        using namespace twit4v;
         
         session["oauth_signature_method"] = "HMAC-SHA1";
         
