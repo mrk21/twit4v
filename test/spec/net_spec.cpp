@@ -14,7 +14,7 @@ go_bandit([]{
     using namespace bandit;
     
     describe("twit4v::net", []{
-        describe("generate_www_form_urlencoded(params)", [&]{
+        describe("::generate_www_form_urlencoded(params)", [&]{
             using namespace www_form_urlencoded_test;
             
             it("should generate a parameter", [&]{
@@ -28,7 +28,7 @@ go_bandit([]{
             });
         });
         
-        describe("parse_www_form_urlencoded(target)", [&]{
+        describe("::parse_www_form_urlencoded(target)", [&]{
             using namespace www_form_urlencoded_test;
             
             it("should split to a parameter", [&]{

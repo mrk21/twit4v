@@ -1,21 +1,21 @@
 #include <bandit_with_gmock/bandit_with_gmock.hpp>
-#include <twit4v/net/oauth.hpp>
+#include <twit4v/net/session/detail/oauth.hpp>
 
-namespace twit4v { namespace net { namespace oauth {
+namespace twit4v { namespace net { namespace session { namespace detail { namespace oauth {
     using namespace boost::network;
     
     namespace signature_base_string_test {
         std::string const URI = "http://example.com/request?b5=%3D%253D&a3=a&c%40=&a2=r%20b";
         std::string const WWW_FORM_URLENCODED_BODY = "c2&a3=2+q";
         std::string const JSON_BODY = "{\"c2\": \"\", \"a3\": \"2 q\"}";
-        oauth::session const SESSION{
+        session::oauth const SESSION{
             {"oauth_consumer_key", "9djdj82h48djs9d2"},
             {"oauth_token", "kkk9d7dh3k39sjv7"},
             {"oauth_signature_method", "HMAC-SHA1"},
             {"oauth_timestamp", "137131201"},
             {"oauth_nonce", "7d8f3e4a"},
         };
-        oauth::session const SESSION_WITH_SIGNATURE_AND_REALM{
+        session::oauth const SESSION_WITH_SIGNATURE_AND_REALM{
             {"realm", "Example"},
             {"oauth_consumer_key", "9djdj82h48djs9d2"},
             {"oauth_token", "kkk9d7dh3k39sjv7"},
@@ -42,58 +42,8 @@ namespace twit4v { namespace net { namespace oauth {
 go_bandit([]{
     using namespace bandit;
     
-    describe("twit4v::net::oauth", []{
-        describe("session", [&]{
-            describe("#send_params([exclusions])", [&]{
-                it("should exclude parameters which have an invalid value", [&]{
-                    oauth::session instance{
-                        {"oauth_consumer_key", "c"},
-                        {"oauth_token", "t"},
-                    };
-                    parameter expected{
-                        {"oauth_consumer_key", "c"},
-                        {"oauth_token", "t"},
-                    };
-                    AssertThat(instance.send_params(), Equals(expected));
-                });
-                
-                it("should exclude parameters of 'oauth_consumer_secret' and 'oauth_token_secret'", [&]{
-                    oauth::session instance{
-                        {"oauth_consumer_key", "c"},
-                        {"oauth_consumer_secret", "cs"},
-                        {"oauth_token", "t"},
-                        {"oauth_token_secret", "ts"},
-                    };
-                    parameter expected{
-                        {"oauth_consumer_key", "c"},
-                        {"oauth_token", "t"},
-                    };
-                    AssertThat(instance.send_params(), Equals(expected));
-                });
-                
-                describe("with the exclusions", [&]{
-                    it("should exclude parameters which are designated by the exclusions", [&]{
-                        oauth::session instance{
-                            {"realm", "r"},
-                            {"oauth_consumer_key", "c"},
-                            {"oauth_token", "t"},
-                            {"oauth_signature", "s"},
-                        };
-                        std::vector<std::string> exclusions{
-                            "realm",
-                            "oauth_signature"
-                        };
-                        parameter expected{
-                            {"oauth_consumer_key", "c"},
-                            {"oauth_token", "t"},
-                        };
-                        AssertThat(instance.send_params(exclusions), Equals(expected));
-                    });
-                });
-            });
-        });
-        
-        describe("detail::signature(session, request, method)", [&]{
+    describe("twit4v::net::session::detail::oauth", []{
+        describe("::signature(session, request, method)", [&]{
             using namespace signature_base_string_test;
             
             describe("when the session['oauth_signature_method'] was nothing", [&]{
@@ -101,7 +51,7 @@ go_bandit([]{
                     auto session = SESSION;
                     auto request = client::request(URI);
                     session["oauth_signature_method"] = boost::none;
-                    AssertThat(static_cast<bool>(detail::signature(session, request, METHOD)), Equals(false));
+                    AssertThat(static_cast<bool>(signature(session, request, METHOD)), Equals(false));
                 });
             });
             
@@ -109,7 +59,7 @@ go_bandit([]{
                 it("should be a valid value", [&]{
                     auto session = SESSION;
                     auto request = client::request(URI);
-                    AssertThat(static_cast<bool>(detail::signature(session, request, METHOD)), Equals(true));
+                    AssertThat(static_cast<bool>(signature(session, request, METHOD)), Equals(true));
                 });
             });
             
@@ -118,17 +68,17 @@ go_bandit([]{
                     auto session = SESSION;
                     auto request = client::request(URI);
                     session["oauth_signature_method"] = "RSA-SHA1";
-                    AssertThat(static_cast<bool>(detail::signature(session, request, METHOD)), Equals(false));
+                    AssertThat(static_cast<bool>(signature(session, request, METHOD)), Equals(false));
                 });
             });
         });
         
-        describe("detail::signature_base_string(session, request, method)", [&]{
+        describe("::signature_base_string(session, request, method)", [&]{
             using namespace signature_base_string_test;
             
             it("should generate", [&]{
                 AssertThat(
-                    detail::signature_base_string(SESSION, client::request(URI), METHOD),
+                    signature_base_string(SESSION, client::request(URI), METHOD),
                     Equals(SIGNATURE_BASE)
                 );
             });
@@ -141,7 +91,7 @@ go_bandit([]{
                         << body(WWW_FORM_URLENCODED_BODY);
                     
                     AssertThat(
-                        detail::signature_base_string(SESSION, request, METHOD),
+                        signature_base_string(SESSION, request, METHOD),
                         Equals(SIGNATURE_BASE_WITH_BODY_PARAM)
                     );
                 });
@@ -155,7 +105,7 @@ go_bandit([]{
                         << body(JSON_BODY);
                     
                     AssertThat(
-                        detail::signature_base_string(SESSION, request, METHOD),
+                        signature_base_string(SESSION, request, METHOD),
                         Equals(SIGNATURE_BASE)
                     );
                 });
@@ -164,7 +114,7 @@ go_bandit([]{
             describe("with oauth params of 'realm' and 'oauth_signature'", [&]{
                 it("should not contain the params", [&]{
                     AssertThat(
-                        detail::signature_base_string(
+                        signature_base_string(
                             SESSION_WITH_SIGNATURE_AND_REALM,
                             client::request(URI),
                             METHOD
@@ -176,4 +126,4 @@ go_bandit([]{
         });
     });
 });
-}}}
+}}}}}

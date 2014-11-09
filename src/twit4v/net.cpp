@@ -11,7 +11,7 @@ namespace twit4v { namespace net {
     
     std::string generate_www_form_urlencoded(parameter const & params) {
         std::vector<std::string> result;
-        for (auto & pair: params) {
+        for (auto && pair: params) {
             result.push_back((boost::format("%s=%s")
                 % encoding::encode(pair.first)
                 % encoding::encode(pair.second)
@@ -28,7 +28,7 @@ namespace twit4v { namespace net {
         boost::split(params, target, boost::is_any_of("&"));
         if (params.size() == 1 && params[0] == "") return {};
         
-        for (auto & param: params) {
+        for (auto && param: params) {
             std::vector<std::string> pair;
             boost::split(pair, param, boost::is_any_of("="));
             result[encoding::decode(pair[0])] = encoding::decode(pair[1]);

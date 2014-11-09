@@ -1,18 +1,19 @@
-#ifndef TWIT4V_NET_OAUTH_HPP
-#define TWIT4V_NET_OAUTH_HPP
+#ifndef TWIT4V_NET_SESSION_OAUTH_HPP
+#define TWIT4V_NET_SESSION_OAUTH_HPP
 
 #include <twit4v/net.hpp>
+#include <string>
 #include <vector>
 #include <initializer_list>
 #include <functional>
 #include <boost/optional.hpp>
 
-namespace twit4v { namespace net { namespace oauth {
-    class session {
+namespace twit4v { namespace net { namespace session {
+    class oauth {
     public:
         using value_type = boost::optional<std::string>;
         using param_type = std::map<std::string, value_type>;
-        using authorizer_type = std::function<void(session &)>;
+        using authorizer_type = std::function<void(oauth &)>;
         
     protected:
         param_type oauth_params{
@@ -32,7 +33,7 @@ namespace twit4v { namespace net { namespace oauth {
         authorizer_type authorizer;
         
     public:
-        session(std::initializer_list<parameter::value_type> params);
+        oauth(std::initializer_list<parameter::value_type> params);
         void set_authorizer(authorizer_type authorizer);
         void authorize();
         value_type       & operator[](std::string const & key);
@@ -40,26 +41,6 @@ namespace twit4v { namespace net { namespace oauth {
         parameter send_params(std::vector<std::string> const & exclusions = {}) const;
         client::request & attach_to(client::request & request, std::string const & method);
     };
-    
-    namespace detail {
-        std::string hmac_sha1(std::string const & key, std::string const & text);
-        
-        std::string authorization_header(oauth::session const & session);
-        std::string timestamp();
-        std::string nonce();
-        
-        oauth::session::value_type signature(
-            oauth::session const & session,
-            client::request const & request,
-            std::string const & method
-        );
-        
-        std::string signature_base_string(
-            oauth::session const & session,
-            client::request const & request,
-            std::string const & method
-        );
-    }
 }}}
 
 #endif

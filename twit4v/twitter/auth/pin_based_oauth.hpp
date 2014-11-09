@@ -3,14 +3,14 @@
 
 #include <string>
 #include <functional>
-#include <twit4v/net/oauth.hpp>
+#include <twit4v/net/session/oauth.hpp>
 
 namespace twit4v { namespace twitter { namespace auth {
     struct pin_based_oauth {
         using pin_getter_type = std::function<std::string(boost::network::uri::uri)>;
         
         pin_based_oauth(pin_getter_type pin_getter = nullptr);
-        void operator ()(net::oauth::session & session);
+        void operator ()(net::session::oauth & session);
         
     protected:
         pin_getter_type get_pin_from;
