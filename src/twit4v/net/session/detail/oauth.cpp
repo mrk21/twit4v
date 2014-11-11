@@ -2,12 +2,11 @@
 #include <twit4v/net/percent_encoding.hpp>
 #include <sstream>
 #include <iomanip>
+#include <chrono>
 #include <boost/format.hpp>
 #include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/date_time.hpp>
-#include <boost/date_time/c_local_time_adjustor.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -49,13 +48,12 @@ namespace twit4v { namespace net { namespace session { namespace detail { namesp
     // see: RFC5849, 3.3
     // note: The returned timestamp is not based 1970-01-01 00:00:00 GMT but based 1970-01-01 00:00:00 UTC.
     std::string timestamp() {
-        using namespace boost::posix_time;
-        using namespace boost::gregorian;
+        using namespace std::chrono;
         
-        auto epoch = ptime(date(1970,1,1));
-        auto diff = second_clock::local_time() - epoch;
+        auto now = system_clock::now();
+        auto epoch = duration_cast<seconds>(now.time_since_epoch());
         
-        return boost::lexical_cast<std::string>(diff.total_seconds());
+        return boost::lexical_cast<std::string>(epoch.count());
     }
     
     // see: RFC5849, 3.3
